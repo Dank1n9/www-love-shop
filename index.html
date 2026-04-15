@@ -1,123 +1,551 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我喜欢你</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>我喜欢你 · 小情话</title>
+  <!-- 柔和风格，仿「我喜欢你.shop」的浪漫基调 -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* 渐变背景 - 原版风格 */
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #fecfef 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            font-family: "Microsoft YaHei", sans-serif;
-            overflow: hidden;
-            cursor: pointer;
-        }
+    body {
+      min-height: 100vh;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 40%, #f48fb1 100%);
+      background-attachment: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+      animation: bgBreath 12s ease-in-out infinite alternate;
+    }
 
-        /* 主文字样式 */
-        .main-text {
-            font-size: 80px;
-            font-weight: bold;
-            color: #ff477e;
-            text-shadow: 0 0 20px rgba(255, 71, 126, 0.5);
-            margin-bottom: 30px;
-            animation: fadeIn 2s ease-in-out;
-            user-select: none;
-        }
+    @keyframes bgBreath {
+      0% { background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 40%, #f48fb1 100%); }
+      50% { background: linear-gradient(225deg, #ffe0f0 0%, #f8bbd0 50%, #ec9bb5 100%); }
+      100% { background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 40%, #f48fb1 100%); }
+    }
 
-        /* 副标题文字 */
-        .sub-text {
-            font-size: 30px;
-            color: #d63384;
-            animation: fadeIn 3s ease-in-out;
-            user-select: none;
-        }
+    /* 漂浮爱心背景 (CSS only) */
+    .floating-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
 
-        /* 渐入动画 */
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+    .floating-hearts span {
+      position: absolute;
+      color: rgba(255, 240, 245, 0.5);
+      font-size: 24px;
+      user-select: none;
+      animation: floatHeart linear infinite;
+      bottom: -50px;
+      opacity: 0.3;
+    }
 
-        /* 爱心浮动特效 */
-        .heart {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #ff477e;
-            transform: rotate(-45deg);
-            animation: float 3s linear infinite;
-            opacity: 0.8;
-        }
+    @keyframes floatHeart {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(0.8);
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 0.25;
+        transform: translateY(-40vh) rotate(180deg) scale(1.1);
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg) scale(0.6);
+        opacity: 0;
+      }
+    }
 
-        .heart::before,
-        .heart::after {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #ff477e;
-            border-radius: 50%;
-        }
+    /* 主卡片——朦胧玻璃效果 */
+    .card {
+      position: relative;
+      z-index: 10;
+      max-width: 680px;
+      width: 90%;
+      margin: 20px auto;
+      padding: 2.8rem 2rem 3rem;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border-radius: 56px;
+      box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(233, 30, 99, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      text-align: center;
+      transition: transform 0.25s ease;
+      animation: cardAppear 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-        .heart::before { top: -15px; left: 0; }
-        .heart::after { top: 0; left: 15px; }
+    @keyframes cardAppear {
+      0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
-        @keyframes float {
-            0% { transform: rotate(-45deg) translateY(0) scale(0.8); opacity: 0.8; }
-            100% { transform: rotate(-45deg) translateY(-100vh) scale(1.2); opacity: 0; }
-        }
-    </style>
+    /* 主标题 */
+    .greeting {
+      font-size: clamp(2.8rem, 15vw, 5.5rem);
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #a3334a;
+      text-shadow: 4px 4px 12px rgba(210, 70, 100, 0.25), 0 0 0 rgba(255, 220, 230, 0.6);
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+      word-break: break-word;
+      animation: titleGlow 3s infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      from { text-shadow: 4px 4px 12px rgba(210, 70, 100, 0.2), 0 0 0 #ffe4ec; }
+      to { text-shadow: 6px 6px 18px rgba(190, 50, 80, 0.35), 0 0 12px #ffd9e4; }
+    }
+
+    /* 副标题/情话 */
+    .sub-message {
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: #7f3e4e;
+      margin: 0.8rem 0 1.2rem;
+      padding: 0 0.5rem;
+      opacity: 0.9;
+      letter-spacing: 0.5px;
+      border-bottom: 2px dashed rgba(200, 100, 120, 0.25);
+      display: inline-block;
+      padding-bottom: 12px;
+    }
+
+    /* 计数器——纪念日风格 */
+    .days-box {
+      background: rgba(255, 245, 248, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 60px;
+      padding: 0.9rem 1.8rem;
+      margin: 1.5rem auto 1.8rem;
+      display: inline-block;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 6px 14px rgba(190, 70, 100, 0.08);
+    }
+
+    .days-text {
+      font-size: 1.2rem;
+      color: #a13e58;
+      font-weight: 500;
+    }
+
+    .days-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0 6px 0 4px;
+      color: #b3405a;
+      display: inline-block;
+      text-shadow: 0 2px 8px #ffb6c1;
+    }
+
+    /* 按钮 */
+    .heart-btn {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255, 220, 230, 0.9);
+      color: #a13e58;
+      padding: 1rem 2.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border-radius: 60px;
+      box-shadow: 0 12px 24px -10px rgba(200, 60, 90, 0.25);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin: 0.5rem 0 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      letter-spacing: 1px;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .heart-btn:hover {
+      background: rgba(255, 240, 245, 0.9);
+      box-shadow: 0 18px 28px -8px #d46a84;
+      transform: scale(1.02);
+      border-color: #f8bbd0;
+    }
+
+    .heart-btn:active {
+      transform: scale(0.97);
+      background: #ffe4ec;
+    }
+
+    /* 脚注小字 */
+    .footer-note {
+      margin-top: 2.2rem;
+      color: #a5586b;
+      font-size: 0.9rem;
+      opacity: 0.8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .footer-note a {
+      color: #a13e58;
+      text-decoration: none;
+      border-bottom: 1px dotted #c98a9a;
+    }
+
+    .shop-badge {
+      background: rgba(230, 150, 170, 0.2);
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    /* 点击产生的爱心特效 */
+    .heart-pop {
+      position: fixed;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 999;
+      animation: popHeart 1.4s ease-out forwards;
+      filter: drop-shadow(0 4px 6px rgba(200, 60, 100, 0.2));
+      will-change: transform, opacity;
+    }
+
+    @keyframes popHeart {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+      }
+      50% {
+        opacity: 0.9;
+        transform: translate(-50%, -80px) scale(1.2) rotate(15deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -180px) scale(0.5) rotate(30deg);
+      }
+    }
+
+    /* 响应式微调 */
+    @media (max-width: 480px) {
+      .card {
+        padding: 2rem 1.2rem 2.5rem;
+        border-radius: 40px;
+      }
+      .greeting {
+        font-size: 3.2rem;
+      }
+      .sub-message {
+        font-size: 1.2rem;
+      }
+      .days-text {
+        font-size: 1rem;
+      }
+      .days-number {
+        font-size: 2rem;
+      }
+      .heart-btn {
+        font-size: 1.3rem;
+        padding: 0.8rem 1.8rem;
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <div class="main-text">我喜欢你</div>
-    <div class="sub-text">满心欢喜 只为你</div>
 
-    <script>
-        // 点击屏幕生成爱心特效
-        document.body.addEventListener('click', createHeart);
+  <!-- 漂浮背景爱心 (纯CSS) -->
+  <div class="floating-hearts" id="floatingHearts"></div>
 
-        // 自动生成随机爱心
-        setInterval(createHeart, 800);
+  <!-- 主卡片 -->
+  <main class="card">
+    <h1 class="greeting" id="mainTitle">我喜欢你</h1>
+    <div class="sub-message" id="subMessage">想和你一起浪费时光</div>
 
-        // 创建爱心函数
-        function createHeart(e) {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            
-            // 鼠标点击位置生成 / 随机位置生成
-            if(e) {
-                heart.style.left = e.clientX - 15 + 'px';
-                heart.style.top = e.clientY - 15 + 'px';
-            } else {
-                heart.style.left = Math.random() * window.innerWidth + 'px';
-                heart.style.top = window.innerHeight + 'px';
-            }
-            
-            // 随机大小
-            const size = Math.random() * 20 + 15;
-            heart.style.width = size + 'px';
-            heart.style.height = size + 'px';
-            
-            // 随机浮动速度
-            heart.style.animationDuration = Math.random() * 2 + 2 + 's';
-            
-            document.body.appendChild(heart);
-            
-            // 3秒后移除爱心元素
-            setTimeout(() => heart.remove(), 3000);
+    <!-- 纪念日天数卡片 -->
+    <div class="days-box" id="daysCounterBox">
+      <span class="days-text">这是喜欢你的第</span>
+      <span class="days-number" id="daysCount">520</span>
+      <span class="days-text">天</span>
+    </div>
+
+    <!-- 互动按钮 · 点击漫天爱心 -->
+    <button class="heart-btn" id="loveBtn">
+      <span>💗</span> 我也喜欢你 <span>💗</span>
+    </button>
+
+    <!-- 脚注 & 致敬原站 (已删除仿站标识) -->
+    <div class="footer-note">
+      <span>❤️</span>
+      <span>每一天都心动</span>
+    </div>
+    <div style="margin-top: 8px; font-size: 0.8rem; opacity: 0.6; color:#8f4b5e;">
+      <span>💌 点击按钮会掉落小爱心哦</span>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // ---------- 可定制参数 (通过URL参数) ----------
+      // 示例: ?name=小可爱&start=2025-01-01
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // 1. 名字定制 —— 如果提供name，主标题变为“XXX，我喜欢你”
+      const customName = urlParams.get('name') || urlParams.get('to') || '';
+      const mainTitleEl = document.getElementById('mainTitle');
+      const subMessageEl = document.getElementById('subMessage');
+      
+      if (customName) {
+        // 过滤XSS，仅保留文字
+        const safeName = customName.replace(/[<>]/g, '').trim();
+        if (safeName) {
+          mainTitleEl.textContent = `${safeName}，我喜欢你`;
+        } else {
+          mainTitleEl.textContent = '我喜欢你';
         }
-    </script>
+      } else {
+        mainTitleEl.textContent = '我喜欢你';
+      }
+
+      // 可选的副标题 (也可以通过参数传递？不做太复杂，给一点随机情话)
+      const sweetMessages = [
+        '想和你一起浪费时光',
+        '你是我所有的例外',
+        '今天比昨天更爱你',
+        '遇见你真好',
+        '世界很大，我只喜欢你',
+        '偷偷喜欢你好久啦',
+        '和你在一起，每天都是情人节',
+        '你一笑，我的心就化了'
+      ];
+      // 如果没有特别指定，随机选一句 (或固定)
+      const randomIndex = Math.floor(Math.random() * sweetMessages.length);
+      // 但也可以根据参数?msg=xxx 来设定（可选）
+      const customMsg = urlParams.get('msg') || '';
+      if (customMsg) {
+        subMessageEl.textContent = customMsg.replace(/[<>]/g, '').trim() || sweetMessages[randomIndex];
+      } else {
+        subMessageEl.textContent = sweetMessages[randomIndex];
+      }
+
+      // ---------- 纪念日计算 (天数) ----------
+      const daysSpan = document.getElementById('daysCount');
+      
+      // 默认起始日期: 如果用户没有通过start参数提供，则默认设定一个浪漫的日期 (2023-05-20)
+      const defaultStart = '2023-05-20';  // 520
+      let startDateStr = urlParams.get('start') || urlParams.get('since') || defaultStart;
+      
+      // 解析日期并计算天数
+      function calculateDays(startStr) {
+        try {
+          const start = new Date(startStr + 'T00:00:00');
+          const today = new Date();
+          // 设置为当天0点，避免时区误差
+          const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          
+          if (isNaN(start.getTime())) {
+            // 如果格式不对，用默认
+            const fallback = new Date(defaultStart + 'T00:00:00');
+            const diffTime = todayStart - fallback;
+            return Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+          }
+          
+          const diffTime = todayStart - start;
+          if (diffTime < 0) {
+            // 如果起始日期在未来，显示0天（但可以浪漫一点写“即将开始”）
+            return 0;
+          }
+          return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        } catch (e) {
+          return 520; // fallback
+        }
+      }
+
+      let days = calculateDays(startDateStr);
+      
+      // 如果days为0且start是未来，可显示特殊文案
+      if (days === 0 && startDateStr) {
+        const startDateObj = new Date(startDateStr + 'T00:00:00');
+        const todayStart = new Date(new Date().setHours(0,0,0,0));
+        if (startDateObj > todayStart) {
+          daysSpan.textContent = '✨';
+          // 修改旁边文字
+          const daysTextBox = document.querySelector('.days-text');
+          // 保留第一个span不变，但修改后面的文字可以动态处理
+          const daysTextSpans = document.querySelectorAll('.days-text');
+          if (daysTextSpans.length >= 2) {
+            daysTextSpans[1].textContent = '天 (倒计时)';
+          }
+        } else {
+          daysSpan.textContent = days;
+        }
+      } else {
+        daysSpan.textContent = days;
+      }
+
+      // 如果用户提供了start参数且无效，保留显示；但上面的calculate已做fallback
+      
+      // 额外: 若没有start且days=默认计算结果，无额外动作
+
+      // 如果用户希望隐藏天数模块？不用，保留。
+
+      // ---------- 爱心点击特效 (仿原站互动) ----------
+      const loveBtn = document.getElementById('loveBtn');
+      const bodyEl = document.body;
+
+      // 创建一颗爱心元素
+      function createHeart(x, y) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart-pop');
+        // 随机使用不同颜色的爱心emoji或者符号
+        const heartIcons = ['❤️', '💗', '💖', '💘', '💝', '💕', '💓', '🌸', '✨', '🥰'];
+        const randomIcon = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+        heart.textContent = randomIcon;
+        
+        // 随机大小
+        const size = 18 + Math.floor(Math.random() * 28);
+        heart.style.fontSize = size + 'px';
+        heart.style.left = x + 'px';
+        heart.style.top = y + 'px';
+        
+        // 随机轻微偏移，让效果更自然
+        const offsetX = (Math.random() - 0.5) * 30;
+        const offsetY = (Math.random() - 0.5) * 30;
+        heart.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+        
+        bodyEl.appendChild(heart);
+        
+        // 动画结束后移除
+        setTimeout(() => {
+          if (heart && heart.parentNode) {
+            heart.remove();
+          }
+        }, 1400);
+      }
+
+      // 批量生成爱心 (爆发)
+      function burstHearts(centerX, centerY, count = 12) {
+        for (let i = 0; i < count; i++) {
+          // 在点击位置周围随机散布
+          const spread = 50;
+          const x = centerX + (Math.random() - 0.5) * spread * 2;
+          const y = centerY + (Math.random() - 0.5) * spread * 1.5 - 10;
+          createHeart(x, y);
+        }
+      }
+
+      // 按钮点击事件
+      loveBtn.addEventListener('click', function(e) {
+        const rect = e.target.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        // 生成18~24颗爱心，超浪漫
+        burstHearts(centerX, centerY, 22);
+        
+        // 同时轻震一下按钮 (视觉反馈)
+        loveBtn.style.transform = 'scale(0.96)';
+        setTimeout(() => { loveBtn.style.transform = ''; }, 120);
+        
+        // 副标题随机变化? 也可以增加趣味
+        const surpriseMsgs = ['💕 收到你的喜欢啦', '双向奔赴！', '好开心～', '我也超喜欢你', '今天糖分超标', '💘 心动 ++'];
+        const randomSurprise = surpriseMsgs[Math.floor(Math.random() * surpriseMsgs.length)];
+        subMessageEl.textContent = randomSurprise;
+        setTimeout(() => {
+          // 2.5秒后恢复原先的副标题 (但保留原先的)
+          const originalMsg = sweetMessages[Math.floor(Math.random() * sweetMessages.length)];
+          subMessageEl.textContent = originalMsg;
+        }, 2000);
+      });
+
+      // 附加: 点击卡片空白区域也可以冒出小爱心 (可选，更像原站灵动感)
+      const cardEl = document.querySelector('.card');
+      cardEl.addEventListener('click', function(e) {
+        // 避免点到按钮重复触发 (按钮已经有点击爱心)
+        if (e.target.closest('.heart-btn')) return;
+        
+        // 获取点击坐标
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+        // 生成3~6颗小爱心
+        const smallBurst = 4 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < smallBurst; i++) {
+          const offsetX = (Math.random() - 0.5) * 60;
+          const offsetY = (Math.random() - 0.5) * 50 - 10;
+          createHeart(clientX + offsetX, clientY + offsetY);
+        }
+      });
+
+      // ---------- 生成背景漂浮爱心 (静态装饰) ----------
+      function generateFloatingHearts() {
+        const container = document.getElementById('floatingHearts');
+        const heartSymbols = ['❤️', '💗', '💖', '💕', '🌸', '✨', '🫧', '💫'];
+        const count = 22; // 漂浮爱心数量
+        
+        for (let i = 0; i < count; i++) {
+          const span = document.createElement('span');
+          const icon = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+          span.textContent = icon;
+          
+          // 随机样式
+          const size = 16 + Math.floor(Math.random() * 36);
+          span.style.fontSize = size + 'px';
+          span.style.left = Math.random() * 100 + '%';
+          span.style.animationDuration = (12 + Math.random() * 18) + 's';
+          span.style.animationDelay = (Math.random() * 15) + 's';
+          span.style.opacity = 0.2 + Math.random() * 0.3;
+          
+          container.appendChild(span);
+        }
+      }
+      
+      generateFloatingHearts();
+
+      // 额外细节：如果URL有start且日期是今天？显示今日特殊标记（可选）
+      const todayStr = new Date().toISOString().slice(0,10);
+      if (startDateStr === todayStr) {
+        const daysTextBox = document.querySelector('.days-text');
+        // 修改显示
+        daysSpan.textContent = '0';
+        // 可以增加“从今天开始”
+        const daysBox = document.getElementById('daysCounterBox');
+        const firstTextSpan = daysBox.querySelector('.days-text');
+        if (firstTextSpan) {
+          firstTextSpan.textContent = '喜欢从今天开始 ❤️ 第 ';
+        }
+        const lastTextSpan = daysBox.querySelectorAll('.days-text')[1];
+        if (lastTextSpan) {
+          lastTextSpan.textContent = ' 天';
+        }
+      }
+
+      // 调整一下如果纪念日是0但是未来，不重复覆盖
+      
+      // 如果用户通过参数提供了自定义名字，我们也可以把副标题加一点变化
+      if (customName) {
+        // 已有名字，不做额外处理
+      }
+
+      // 仿原站的小彩蛋：控制台输出
+      console.log('%c 我喜欢你.shop 仿站 | 愿你被温柔以待 💖', 'font-size: 16px; background: #f8bbd0; color: #5f2a38; padding: 6px 12px; border-radius: 30px;');
+    })();
+  </script>
 </body>
 </html>
