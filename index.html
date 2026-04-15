@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我喜欢你</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 渐变背景 - 原版风格 */
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #fecfef 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: "Microsoft YaHei", sans-serif;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        /* 主文字样式 */
+        .main-text {
+            font-size: 80px;
+            font-weight: bold;
+            color: #ff477e;
+            text-shadow: 0 0 20px rgba(255, 71, 126, 0.5);
+            margin-bottom: 30px;
+            animation: fadeIn 2s ease-in-out;
+            user-select: none;
+        }
+
+        /* 副标题文字 */
+        .sub-text {
+            font-size: 30px;
+            color: #d63384;
+            animation: fadeIn 3s ease-in-out;
+            user-select: none;
+        }
+
+        /* 渐入动画 */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 爱心浮动特效 */
+        .heart {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff477e;
+            transform: rotate(-45deg);
+            animation: float 3s linear infinite;
+            opacity: 0.8;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff477e;
+            border-radius: 50%;
+        }
+
+        .heart::before { top: -15px; left: 0; }
+        .heart::after { top: 0; left: 15px; }
+
+        @keyframes float {
+            0% { transform: rotate(-45deg) translateY(0) scale(0.8); opacity: 0.8; }
+            100% { transform: rotate(-45deg) translateY(-100vh) scale(1.2); opacity: 0; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-text">我喜欢你</div>
+    <div class="sub-text">满心欢喜 只为你</div>
+
+    <script>
+        // 点击屏幕生成爱心特效
+        document.body.addEventListener('click', createHeart);
+
+        // 自动生成随机爱心
+        setInterval(createHeart, 800);
+
+        // 创建爱心函数
+        function createHeart(e) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+            // 鼠标点击位置生成 / 随机位置生成
+            if(e) {
+                heart.style.left = e.clientX - 15 + 'px';
+                heart.style.top = e.clientY - 15 + 'px';
+            } else {
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.top = window.innerHeight + 'px';
+            }
+            
+            // 随机大小
+            const size = Math.random() * 20 + 15;
+            heart.style.width = size + 'px';
+            heart.style.height = size + 'px';
+            
+            // 随机浮动速度
+            heart.style.animationDuration = Math.random() * 2 + 2 + 's';
+            
+            document.body.appendChild(heart);
+            
+            // 3秒后移除爱心元素
+            setTimeout(() => heart.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
