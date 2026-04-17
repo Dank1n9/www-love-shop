@@ -14,68 +14,67 @@
         html, body {
             width: 100%;
             height: 100%;
-            background: #ffffff; /* 全屏纯白背景 */
+            background: #ffffff;
             overflow: hidden;
             font-family: "Microsoft YaHei", sans-serif;
         }
 
-        /* 轮播容器 */
         .carousel {
             position: relative;
             width: 100vw;
             height: 100vh;
         }
 
-        /* 加载状态布局 */
+        /* 加载层：全屏纯白 */
         .loading {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #fff;
-            z-index: 999;
+            background: #ffffff;
+            z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
         }
 
-        /* 左上角小图标 ft.png */
-        .loading-icon {
+        /* 左上角小 ft.png */
+        .loading-logo {
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 80px; /* 小尺寸 */
+            width: 90px;
             height: auto;
+            z-index: 99999;
         }
 
         /* 加载文字 */
-        .loading-text {
-            font-size: 22px;
+        .loading-tip {
+            font-size: 24px;
             color: #333;
         }
 
-        /* 图片默认隐藏 */
+        /* 轮播图片 */
         .carousel img {
             position: absolute;
             width: 100%;
             height: 100%;
             object-fit: cover;
             opacity: 0;
-            cursor: pointer;
             z-index: 1;
         }
 
-        /* 加载完成后显示轮播 */
+        /* 加载完成 → 隐藏加载界面 */
         .carousel.ready .loading {
             display: none;
         }
+
         .carousel.ready img {
             animation: fade 21s infinite ease-in-out;
+            cursor: pointer;
         }
 
-        /* 平滑淡入淡出动画 */
         @keyframes fade {
             0%  { opacity: 0; }
             8%  { opacity: 1; }
@@ -84,12 +83,10 @@
             100%{ opacity: 0; }
         }
 
-        /* 轮播延时 */
-        .carousel img:nth-child(1) { animation-delay: 0s; }
         .carousel img:nth-child(2) { animation-delay: 7s; }
         .carousel img:nth-child(3) { animation-delay: 14s; }
 
-        /* 鼠标悬停暂停 */
+        /* 悬停暂停 */
         .carousel.ready:hover img {
             animation-play-state: paused;
         }
@@ -98,10 +95,10 @@
 
 <body>
     <div class="carousel">
-        <!-- 加载界面 -->
+        <!-- 加载界面：左上角 ft.png + 中间文字 -->
         <div class="loading">
-            <img src="img/ft.png" class="loading-icon" alt="logo">
-            <div class="loading-text">正在加载图像中，请稍后</div>
+            <img src="img/ft.png" class="loading-logo" alt="logo">
+            <div class="loading-tip">正在加载图像中，请稍后</div>
         </div>
 
         <!-- 轮播图片 -->
@@ -112,14 +109,13 @@
 
     <script>
         const carousel = document.querySelector('.carousel');
-        const imgs = document.querySelectorAll('.carousel img:not(.loading-icon)');
-        let loaded = 0;
+        const images = document.querySelectorAll('.carousel img:not(.loading-logo)');
+        let count = 0;
 
-        imgs.forEach(img => {
-            img.onload = function() {
-                loaded++;
-                // 全部加载完成 → 开始轮播
-                if (loaded === imgs.length) {
+        images.forEach(img => {
+            img.onload = () => {
+                count++;
+                if (count === images.length) {
                     carousel.classList.add('ready');
                 }
             };
