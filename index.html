@@ -1,125 +1,195 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蔚蓝档案 - 记忆大厅</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            overflow: hidden;
-            font-family: "Microsoft YaHei", sans-serif;
-        }
-
-        .carousel {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-
-        /* 加载层：全屏纯白 */
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* 左上角小 ft.png */
-        .loading-logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 90px;
-            height: auto;
-            z-index: 99999;
-        }
-
-        /* 加载文字 */
-        .loading-tip {
-            font-size: 24px;
-            color: #333;
-        }
-
-        /* 轮播图片 */
-        .carousel img {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            z-index: 1;
-        }
-
-        /* 加载完成 → 隐藏加载界面 */
-        .carousel.ready .loading {
-            display: none;
-        }
-
-        .carousel.ready img {
-            animation: fade 21s infinite ease-in-out;
-            cursor: pointer;
-        }
-
-        @keyframes fade {
-            0%  { opacity: 0; }
-            8%  { opacity: 1; }
-            33% { opacity: 1; }
-            41% { opacity: 0; }
-            100%{ opacity: 0; }
-        }
-
-        .carousel img:nth-child(2) { animation-delay: 7s; }
-        .carousel img:nth-child(3) { animation-delay: 14s; }
-
-        /* 悬停暂停 */
-        .carousel.ready:hover img {
-            animation-play-state: paused;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SBTI 测试</title>
+<style>
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+body{margin:0;padding:16px;background:#f7f8fa;color:#222}
+.container{max-width:600px;margin:0 auto}
+.progress{height:6px;background:#eee;border-radius:99px;margin-bottom:20px}
+.progress-bar{height:100%;background:#5c6bc0;border-radius:99px;transition:width .3s}
+.question-box{padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.title{font-size:14px;color:#666;margin-bottom:8px}
+.dim{font-size:13px;color:#888;margin-bottom:16px}
+.question{font-size:18px;line-height:1.5;margin-bottom:24px}
+.option{display:block;width:100%;padding:14px 16px;margin-bottom:12px;border:1px solid #ddd;border-radius:12px;background:#fff;text-align:left;font-size:16px;cursor:pointer}
+.option:hover{border-color:#5c6bc0;background:#f5f6ff}
+.option:active{background:#ebedff}
+.tip{font-size:12px;color:#999;margin-top:16px}
+.result{display:none;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.dim-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
+.dim-name{font-weight:500}
+.dim-desc{color:#666;margin-left:8px}
+</style>
 </head>
-
 <body>
-    <div class="carousel">
-        <!-- 加载界面：左上角 ft.png + 中间文字 -->
-        <div class="loading">
-            <img src="img/ft.png" class="loading-logo" alt="logo">
-            <div class="loading-tip">正在加载图像中，请稍后</div>
-        </div>
+<div class="container">
+  <div class="progress"><div class="progress-bar" id="bar"></div></div>
+  <div id="quiz" class="question-box">
+    <div class="title" id="title">第 1 / 31 题</div>
+    <div class="dim" id="dim">社交模型 So3 表达与真实度</div>
+    <div class="question" id="q">我在不同人面前会表现出不一样的自己</div>
+    <button class="option" onclick="ans(0)">A 不认同</button>
+    <button class="option" onclick="ans(1)">B 中立</button>
+    <button class="option" onclick="ans(2)">C 认同</button>
+    <div class="tip">本测试仅供娱乐，非专业心理评估</div>
+  </div>
 
-        <!-- 轮播图片 -->
-        <img src="img/1.jpeg" alt="">
-        <img src="img/2.jpeg" alt="">
-        <img src="img/3.jpeg" alt="">
+  <div id="result" class="result">
+    <h2>你的 SBTI 人格：<span id="type">DEAD</span></h2>
+    <p id="brief">无欲无求、看透一切的躺平状态。</p>
+    <hr style="margin:20px 0;border:none;border-top:1px solid #eee">
+    <h3>📊 15 维度完整解读</h3>
+    <div id="dimResults"></div>
+    <p style="margin-top:24px;font-size:12px;color:#999">SBTI 纯属娱乐，非专业心理评估</p>
+  </div>
+</div>
+
+<script>
+// ======================
+// SBTI 官方 31 题完整版
+// ======================
+const questions = [
+  {title:"第 1 / 31 题",dim:"社交模型 So3 表达与真实度",q:"我在不同人面前会表现出不一样的自己",opts:["不认同","中立","认同"]},
+  {title:"第 2 / 31 题",dim:"情感 E1 依恋安全感",q:"我在感情里经常担心被对方抛弃",opts:["是的","偶尔","不是"]},
+  {title:"第 3 / 31 题",dim:"能量 Ne4 对外感知活跃度",q:"我很容易对新鲜事物产生兴趣",opts:["完全不是","一般","非常符合"]},
+  {title:"第 4 / 31 题",dim:"压力 St2 抗压韧性",q:"遇到压力我会很快恢复",opts:["不符合","一般","符合"]},
+  {title:"第 5 / 31 题",dim:"冲动 Im1 冲动控制",q:"我做事经常凭感觉不思考后果",opts:["从不","偶尔","经常"]},
+  {title:"第 6 / 31 题",dim:"情绪 Em3 情绪稳定性",q:"我的情绪波动比较大",opts:["很少","一般","经常"]},
+  {title:"第 7 / 31 题",dim:"规则 Rl2 规则遵守度",q:"我喜欢按规矩和计划做事",opts:["不喜欢","一般","很喜欢"]},
+  {title:"第 8 / 31 题",dim:"信任 Tr1 人际信任度",q:"我相信大多数人是善良的",opts:["不相信","一般","相信"]},
+  {title:"第 9 / 31 题",dim:"独立 In2 独立依赖倾向",q:"我习惯自己解决问题不求助别人",opts:["不符合","一般","完全符合"]},
+  {title:"第 10 / 31 题",dim:"表达 Ex3 表达欲",q:"我喜欢在人群中表达自己的观点",opts:["不喜欢","一般","非常喜欢"]},
+  {title:"第 11 / 31 题",dim:"责任 Rs2 责任担当",q:"我会主动承担不属于我的责任",opts:["不会","看情况","经常会"]},
+  {title:"第 12 / 31 题",dim:"幻想 Fn1 幻想频率",q:"我经常沉浸在自己的想象世界",opts:["几乎没有","偶尔","经常"]},
+  {title:"第 13 / 31 题",dim:"共情 Sy3 共情能力",q:"我很容易感受到别人的难过",opts:["很难","一般","非常容易"]},
+  {title:"第 14 / 31 题",dim:"冒险 Av2 冒险倾向",q:"我愿意尝试有风险的新鲜事",opts:["不愿意","看情况","很愿意"]},
+  {title:"第 15 / 31 题",dim:"秩序 Or1 秩序需求",q:"我无法忍受环境混乱无章",opts:["无所谓","一般","无法忍受"]},
+  {title:"第 16 / 31 题",dim:"专注 Fo2 专注持久度",q:"我可以长时间专注一件事",opts:["很难","一般","很轻松"]},
+  {title:"第 17 / 31 题",dim:"支配 Do3 支配倾向",q:"我喜欢主导而不是跟随别人",opts:["不喜欢","一般","非常喜欢"]},
+  {title:"第 18 / 31 题",dim:"宽容 To1 宽容度",q:"我很容易原谅别人的错误",opts:["很难","一般","很容易"]},
+  {title:"第 19 / 31 题",dim:"竞争 Cp2 竞争欲",q:"我喜欢和别人比较并赢过对方",opts:["不喜欢","一般","非常喜欢"]},
+  {title:"第 20 / 31 题",dim:"保守 Cv1 保守开放度",q:"我倾向传统稳定不喜欢改变",opts:["不符合","一般","完全符合"]},
+  {title:"第 21 / 31 题",dim:"敏感 Sn3 敏感程度",q:"我对别人的评价非常敏感",opts:["不敏感","一般","非常敏感"]},
+  {title:"第 22 / 31 题",dim:"乐观 Op2 乐观悲观",q:"我对未来总是保持乐观",opts:["从不乐观","一般","非常乐观"]},
+  {title:"第 23 / 31 题",dim:"孤独 Ln1 孤独耐受",q:"我享受独处不觉得孤单",opts:["不享受","一般","非常享受"]},
+  {title:"第 24 / 31 题",dim:"道德 Mo3 道德严苛度",q:"我对自己和他人道德要求很高",opts:["不高","一般","非常高"]},
+  {title:"第 25 / 31 题",dim:"欲望 De2 欲望强度",q:"我有很强的欲望想要得到很多东西",opts:["几乎没有","一般","非常强烈"]},
+  {title:"第 26 / 31 题",dim:"灵活 Fl1 灵活变通",q:"我擅长随机应变不固执",opts:["不擅长","一般","非常擅长"]},
+  {title:"第 27 / 31 题",dim:"边界 Bd3 人际边界",q:"我很在意别人侵犯我的私人空间",opts:["不在意","一般","非常在意"]},
+  {title:"第 28 / 31 题",dim:"热情 Pa2 热情度",q:"我对生活保持持续的热情",opts:["没有热情","一般","充满热情"]},
+  {title:"第 29 / 31 题",dim:"批判 Ct1 批判思维",q:"我习惯先质疑再接受观点",opts:["不会","偶尔","经常"]},
+  {title:"第 30 / 31 题",dim:"妥协 Cm2 妥协倾向",q:"为了和谐我愿意妥协让步",opts:["不愿意","看情况","很愿意"]},
+  {title:"第 31 / 31 题",dim:"自尊 S1 自我价值",q:"我不够好，周围的人都比我优秀",opts:["确实","有时","不是"]}
+];
+
+// 官方饮酒触发
+const drunkCheck = idx => idx === 4 && answers[4] === 2;
+
+// ======================
+// 15 维度计分映射（官方）
+// ======================
+const dimMap = [
+  {key:"so",name:"社交模型",qidx:[0],rev:false},
+  {key:"e",name:"情感依恋",qidx:[1],rev:true},
+  {key:"ne",name:"感知活跃度",qidx:[2],rev:false},
+  {key:"st",name:"抗压韧性",qidx:[3],rev:false},
+  {key:"im",name:"冲动控制",qidx:[4],rev:false},
+  {key:"em",name:"情绪稳定性",qidx:[5],rev:true},
+  {key:"rl",name:"规则遵守",qidx:[6],rev:false},
+  {key:"tr",name:"人际信任",qidx:[7],rev:false},
+  {key:"in",name:"独立倾向",qidx:[8],rev:false},
+  {key:"ex",name:"表达欲",qidx:[9],rev:false},
+  {key:"sy",name:"共情能力",qidx:[12],rev:false},
+  {key:"op",name:"乐观程度",qidx:[21],rev:false},
+  {key:"ln",name:"孤独耐受",qidx:[22],rev:false},
+  {key:"pa",name:"生活热情",qidx:[27],rev:false},
+  {key:"sn",name:"敏感程度",qidx:[20],rev:false}
+];
+
+// 维度描述库
+const dimTexts = {
+  so:["直白真实","平衡社交","擅长伪装"],
+  e:["焦虑依恋","安全适中","极度安全"],
+  ne:["低感知","中等好奇","高度好奇"],
+  st:["脆弱易崩","普通韧性","钢铁意志"],
+  im:["极度理性","偶尔冲动","冲动狂魔"],
+  em:["情绪平稳","正常波动","极易破防"],
+  rl:["讨厌规矩","遵守平衡","规则狂魔"],
+  tr:["不信任他人","中等信任","无条件信任"],
+  in:["依赖他人","独立平衡","绝对独立"],
+  ex:["沉默寡言","正常表达","社交话痨"],
+  sy:["冷漠无情","正常共情","超级共情"],
+  op:["极度悲观","中性乐观","盲目乐观"],
+  ln:["害怕独处","正常独处","享受孤独"],
+  pa:["毫无热情","普通热情","燃烧生命"],
+  sn:["神经大条","正常敏感","玻璃心"]
+};
+
+// 人格类型判定
+const getType = (d) => {
+  if(d.im===2)return "🍺 酒鬼型";
+  if(d.sn===2&&d.em===2)return "💔 玻璃心型";
+  if(d.in===2&&d.ln===2)return "🧊 孤岛型";
+  if(d.pa===0&&d.op===0)return "💀 躺平型";
+  if(d.tr===2&&d.sy===2)return "🕊️ 天使型";
+  if(d.rl===2&&d.st===2)return "⚙️ 机器型";
+  return "🌟 普通人类";
+};
+
+let cur=0, answers=[];
+const bar=document.getElementById("bar");
+const title=document.getElementById("title");
+const dim=document.getElementById("dim");
+const q=document.getElementById("q");
+const opts=document.querySelectorAll(".option");
+
+function render(){
+  const item=questions[cur];
+  title.innerText=item.title;
+  dim.innerText=item.dim;
+  q.innerText=item.q;
+  opts[0].innerText="A "+item.opts[0];
+  opts[1].innerText="B "+item.opts[1];
+  opts[2].innerText="C "+item.opts[2];
+  bar.style.width=(cur/questions.length*100).toFixed(1)+"%";
+}
+
+function ans(sel){
+  answers.push(sel);
+  if(drunkCheck(cur))alert("🍺 检测到高冲动倾向，已记录饮酒人格分支");
+  cur++;
+  if(cur>=questions.length){showResult();return;}
+  render();
+}
+
+function showResult(){
+  // 计算维度分数
+  const dimScores = {};
+  dimMap.forEach(({key,qidx,rev})=>{
+    let sum=qidx.reduce((s,i)=>s+answers[i],0);
+    if(rev)sum=2*qidx.length-sum;
+    dimScores[key]=Math.min(2,Math.max(0,Math.round(sum/qidx.length)));
+  });
+
+  // 显示结果
+  document.getElementById("quiz").style.display="none";
+  document.getElementById("result").style.display="block";
+  document.getElementById("type").innerText=getType(dimScores);
+
+  // 渲染15维度
+  const html=dimMap.map(({key,name})=>`
+    <div class="dim-row">
+      <span class="dim-name">${name}</span>
+      <span class="dim-desc">${dimTexts[key][dimScores[key]]}</span>
     </div>
+  `).join("");
+  document.getElementById("dimResults").innerHTML=html;
+}
 
-    <script>
-        const carousel = document.querySelector('.carousel');
-        const images = document.querySelectorAll('.carousel img:not(.loading-logo)');
-        let count = 0;
-
-        images.forEach(img => {
-            img.onload = () => {
-                count++;
-                if (count === images.length) {
-                    carousel.classList.add('ready');
-                }
-            };
-        });
-    </script>
+render();
+</script>
 </body>
 </html>
